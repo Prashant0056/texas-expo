@@ -1,27 +1,29 @@
-"use client"
+'use client'
 
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay"
+import Image from 'next/image'
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
 
-
-const DisplayCarousel = () => {
-  return (
-    <div className="bg-red-600 rounded-xl">
-
-      <Carousel plugins={[Autoplay({
-        delay: 2000,
-      }),]}
-      className="bg-green-500 h-full rounded-xl"
-      >
-        <CarouselContent>
-          <CarouselItem>item 1</CarouselItem>
-          <CarouselItem>item 2</CarouselItem>
-          <CarouselItem>item 3</CarouselItem>
-          <CarouselItem>item 4</CarouselItem>
-        </CarouselContent>
-      </Carousel>
-    </div>
-  )
+interface Message {
+  image: string
 }
 
-export default DisplayCarousel;
+export function DisplayCarousel({ images }: { images: Message[] }) {
+  return (
+    <Carousel autoplay className="relative h-[35vh] w-full">
+      <CarouselContent>
+        {images.map((feature) => (
+          <CarouselItem key={feature.image}>
+            <Image
+              src={feature.image}
+              alt="Department Head Message"
+              width={1400}
+              height={1000}
+              className="w-auto h-auto object-center object-cover"
+              priority
+            />
+          </CarouselItem>
+        ))}
+      </CarouselContent>{' '}
+    </Carousel>
+  )
+}

@@ -13,14 +13,10 @@ const DateTimeDisplay = () => {
         return () => clearInterval(intervalId); // Cleanup the interval on component unmount
     }, []);
 
-    // Extract date and time separately
-    const date = currentDateTime.toLocaleDateString(); // Formats the date
-    const time = currentDateTime.toLocaleTimeString(); // Formats the time
-
     return (
         <div className="text-right  ">
-            <p>{time}</p>
-            <p>{date}</p>
+            <p>{currentDateTime.toLocaleDateString()}</p>
+            <p>{currentDateTime.toLocaleTimeString()}</p>
         </div>
     );
 };

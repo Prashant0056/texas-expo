@@ -1,14 +1,16 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, School, UsersRound } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { UsersRound } from "lucide-react"
+import { Data } from "../../api/participants"
 
 interface ParticipantCountProps {
-    totalParticipants: number
-
+    data: Data["docs"];
 }
 
-const ParticipantCount = ({ totalParticipants }: ParticipantCountProps) => {
+const ParticipantCount = ({ data }: ParticipantCountProps) => {
+    const participantCount = data?.reduce((sum, doc) => sum + doc.participantNumber, 0)
+
 
     return (
         <Card className="rounded-xl h-full pt-2">
@@ -17,7 +19,7 @@ const ParticipantCount = ({ totalParticipants }: ParticipantCountProps) => {
                 <div className="aspect-square p-10 rounded-full border-4 border-green-500 shadow-lg flex items-center justify-center  font-bold text-4xl">
                     <div className="flex flex-col items-center justify-center gap-3">
                         <UsersRound className="h-16 w-16 text-green-600"/>
-                        {totalParticipants}
+                        {participantCount}
                     </div>
                 </div>
             </CardContent>

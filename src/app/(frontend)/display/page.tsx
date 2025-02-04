@@ -1,69 +1,102 @@
-"use server";
-
+"use client";
 import ParticipantCount from "./_components/participant-count";
+import { DisplayCarousel } from "./_components/display-carousel";
+import { useEffect, useState } from "react";
+import WelcomeOverlay from "./_components/welcome-overlay";
+import { Media } from "@/payload-types";
 import ImportantPersonnel from "./_components/important-personnels";
-import { getPayload } from "payload";
-import configPromise from "../../../payload.config"
-import DisplayCarousel from "./_components/display-carousel";
-import { RefreshRouteOnSave } from "./_components/refresh-route-onSave";
+import { useWelcome, WelcomeProvider } from "./_components/welcome-context";
+import { Button } from "@/components/ui/button";
+
+interface IDocs {
+  id: string;
+  collegeName: string;
+  participantNumber: number;
+  photo: Media | string;
+  createdAt: string;
+  contactPerson: string;
+}
+
+export type TCollegeDetails = {
+  name: string;
+  count: number;
+  imageUrl: string;
+};
+
+interface PageData {
+  participants: any[],
+  display: any[],
+}
+
+async function getData(): Promise<PageData> {
+  const response = await fetch('/api/page-data')
+  if (!response.ok) {
+    throw new Error('Failed to fetch data')
+  }
+  return response.json()
+}
 
 
+const DisplayPage = () => {
+  const [showOverlay, setShowOverlay] = useState(true)
+  const [latestCollege, setLatestCollege] = useState<IDocs | undefined>(undefined);
 
-// const participants = [
-//   { collegeName: "Texas International College", participantCount: 12, photo: "/api/media/file/HTML5_logo.svg" },
-//   { collegeName: "Stanford University", participantCount: 8, photo: "/url2" },
-//   { collegeName: "Harvard University", participantCount: 15, photo: "/url3" },
-//   { collegeName: "MIT", participantCount: 10, photo: "/url4" },
-//   { collegeName: "University of California, Berkeley", participantCount: 20, photo: "/url5" }
-// ];
+  const [data, setData] = useState<PageData | undefined>(undefined)
 
-const DisplayPage = async () => {
-
-  const payload = await getPayload({ config: configPromise })
-  const participantsList = await payload.find({
-    collection: 'participants',
-    depth: 1,
-    select: {
-      collegeName: true,
-      participantNumber: true,
-      photo: true,
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const newData = await getData()
+        const latestData = newData.participants.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+        setLatestCollege(latestData);
+        setData(newData)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
     }
-  })
+
+    // Initial fetch
+    fetchData()
+
+    // Set up polling every 5 seconds
+    const intervalId = setInterval(fetchData, 5000)
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId)
+  }, [])
 
 
-  console.log("participant", (participantsList).docs[1]?.id);
-  console.log("participant tet");
-
-  console.log("This is the count: ", participantsList.docs.length)
-
-  participantsList.docs.map(item => {
-    console.log(item)
-  })
-
-  const participants: Record<string, string | number>[] = participantsList.docs.map(item => {
-    return {
-      collegeName: item.collegeName,
-      participantNumber: item.participantNumber,
-      photo: item.photo.url,
-    }
-  })
-
-
-  async function refreshed() {
-    "use server"
-    console.log("refreshed")
+  if (!data) {
+    return <div>Loading...</div>
   }
 
   return (
     <>
-      <RefreshRouteOnSave />
-      <div className="flex-1 bg-gray-100 grid grid-cols-2 grid-rows-2 gap-2 p-4">
-        {/* <Carousel carouselItem={participants}/> */}
-        <DisplayCarousel />
-        <ParticipantCount totalParticipants={12435} />
-        <ImportantPersonnel page={{title: "new"}}/>
-        {/* <ImportantPersonnel /> */}
+      <div className="flex-1 h-svh bg-gray-100 flex flex-col gap-2 p-4">
+        <div className="flex-1 bg-gray-100 flex gap-2">
+          <div className="flex-1 rounded-xl overflow-clip relative">
+            <DisplayCarousel images={data.display} />
+
+          </div>
+          <div className="flex-1">
+            <ParticipantCount data={data.participants} />
+          </div>
+        </div>
+        <div className="flex-1 flex gap-2">
+          <div className="flex-1"><ImportantPersonnel /></div>
+          <div className="flex-1 rounded-xl overflow-clip relative">
+            <DisplayCarousel images={data.display} />
+          </div>
+        </div>
       </div>
+      <WelcomeProvider>
+        <WelcomeOverlay showOverlay={showOverlay} college={latestCollege?.collegeName} photoUrl={typeof latestCollege?.photo !== 'string' && latestCollege?.photo?.url
+        } studentCount={latestCollege?.participantNumber} contactPerson={latestCollege?.contactPerson} />
+      </WelcomeProvider>
+
+      <Button variant={"default"} onClick={()=>setShowOverlay(true)}>
+                Trigger welcome
+            </Button>
     </>
 
   )

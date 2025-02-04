@@ -1,23 +1,27 @@
 "use client";
 
 import Image from "next/image"
-import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useWelcome } from "./welcome-context";
+import { useEffect } from "react";
+
+interface IWelcomeOverlayProps {
+    college?: string;
+    studentCount?: number;
+    photoUrl?: string | false | null;
+    showOverlay: boolean;
+    contactPerson?:string;
+}
 
 
+const WelcomeOverlay = ({ showOverlay, college, studentCount, photoUrl, contactPerson }: IWelcomeOverlayProps) => {
 
-const WelcomeOverlay = () => {
-    const [showOverlay, setShowOverlay] = useState(false)
-
-    useEffect(() => {
-        let timer: NodeJS.Timeout
-        if (showOverlay) {
-            timer = setTimeout(() => {
-                setShowOverlay(false)
-            }, 5000)
-        }
-        return () => clearTimeout(timer)
-    }, [showOverlay])
+      const {isVisible}=useWelcome();
+    
+      useEffect(()=>{
+          console.log("changed")
+      },[isVisible])
+    
 
     return (<div>
 
@@ -35,21 +39,24 @@ const WelcomeOverlay = () => {
 
                         <div>
                             <h2 className="text-4xl font-bold mb-8">Welcome 🙏</h2>
-                            <h2 className="text-5xl font-bold mb-8">Texas International College</h2>
+                            <h2 className="text-5xl font-bold mb-8 capitalize">{college}</h2>
                         </div>
 
                         <div className="flex flex-col flex-1 items-center justify-center gap-4">
                             <div className="flex flex-col gap-3">
                                 <p className="text-2xl">Number of Attending Students</p>
-                                <p className="text-6xl font-bold">1,234</p>
+                                <p className="text-6xl font-bold">{studentCount}</p>
+                            </div>
+                            <div>
+                                <p className="text-xl font-semibold">Thank You {contactPerson}</p>
                             </div>
                             <div className="flex relative w-1/2 rounded-md h-full justify-center">
-                                    <Image
-                                        src="/assets/dummy.jpg"
-                                        alt="School Image"
-                                        fill
-                                        objectFit="contain"
-                                    />
+                                {photoUrl && <Image
+                                    src={photoUrl}
+                                    alt="School Image"
+                                    fill
+                                    objectFit="contain"
+                                />}
                             </div>
 
                         </div>
@@ -57,12 +64,6 @@ const WelcomeOverlay = () => {
                 </motion.div>
             ) : null}
         </AnimatePresence>
-        <motion.button
-            onClick={() => setShowOverlay(!showOverlay)}
-            whileTap={{ y: 1 }}
-        >
-            {showOverlay ? "Hide" : "Show"}
-        </motion.button>
     </div>
     )
 }

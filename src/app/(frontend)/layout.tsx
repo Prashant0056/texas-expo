@@ -27,10 +27,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Providers>
           <div className="flex flex-col">
             <div className='h-screen flex flex-col'>
-            <Header />
-            {children}
+              <Header />
+                {children}
             </div>
-          <Footer />
+            <Footer />
           </div>
         </Providers>
       </body>

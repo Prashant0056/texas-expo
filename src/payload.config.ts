@@ -17,6 +17,8 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import Participants from './collections/Participants'
+import Activities from './collections/Activities'
+import Stalls from './collections/Stalls'
 
 
 const filename = fileURLToPath(import.meta.url)
@@ -63,9 +65,9 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Participants],
+  collections: [Pages, Posts, Media, Categories, Users, Participants, Activities, Stalls],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer],
+  globals: [Header, Footer, ],
   plugins: [
     ...plugins,
     // storage-adapter-placeholder

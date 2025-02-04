@@ -17,6 +17,8 @@ export interface Config {
     categories: Category;
     users: User;
     participants: Participant;
+    activities: Activity;
+    stalls: Stall;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -34,6 +36,8 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     participants: ParticipantsSelect<false> | ParticipantsSelect<true>;
+    activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
+    stalls: StallsSelect<false> | StallsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -680,7 +684,32 @@ export interface Participant {
   id: string;
   collegeName: string;
   participantNumber: number;
+  contactPerson: string;
+  photo?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities".
+ */
+export interface Activity {
+  id: string;
   photo: string | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stalls".
+ */
+export interface Stall {
+  id: string;
+  stallNo: string;
+  projects: {
+    title: string;
+    id?: string | null;
+  }[];
   updatedAt: string;
   createdAt: string;
 }
@@ -879,6 +908,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'participants';
         value: string | Participant;
+      } | null)
+    | ({
+        relationTo: 'activities';
+        value: string | Activity;
+      } | null)
+    | ({
+        relationTo: 'stalls';
+        value: string | Stall;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1244,7 +1281,32 @@ export interface UsersSelect<T extends boolean = true> {
 export interface ParticipantsSelect<T extends boolean = true> {
   collegeName?: T;
   participantNumber?: T;
+  contactPerson?: T;
   photo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities_select".
+ */
+export interface ActivitiesSelect<T extends boolean = true> {
+  photo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stalls_select".
+ */
+export interface StallsSelect<T extends boolean = true> {
+  stallNo?: T;
+  projects?:
+    | T
+    | {
+        title?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

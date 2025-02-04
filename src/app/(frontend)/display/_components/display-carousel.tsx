@@ -11,8 +11,8 @@ export function DisplayCarousel({ images }: { images: Message[] }) {
   return (
     <Carousel autoplay className="relative h-[35vh] w-full">
       <CarouselContent>
-        {images.map((feature) => (
-          <CarouselItem key={feature.image}>
+        {images.map((feature, index) => (
+          <CarouselItem key={index}>
             <Image
               src={feature.image}
               alt="Department Head Message"

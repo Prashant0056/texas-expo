@@ -2,8 +2,6 @@
 
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { useWelcome } from "./welcome-context";
-import { useEffect } from "react";
 
 interface IWelcomeOverlayProps {
     college?: string;
@@ -15,13 +13,6 @@ interface IWelcomeOverlayProps {
 
 
 const WelcomeOverlay = ({ showOverlay, college, studentCount, photoUrl, contactPerson }: IWelcomeOverlayProps) => {
-
-      const {isVisible}=useWelcome();
-    
-      useEffect(()=>{
-          console.log("changed")
-      },[isVisible])
-    
 
     return (<div>
 

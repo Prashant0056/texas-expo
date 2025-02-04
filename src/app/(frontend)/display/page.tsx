@@ -3,10 +3,9 @@ import ParticipantCount from "./_components/participant-count";
 import { DisplayCarousel } from "./_components/display-carousel";
 import { useEffect, useState } from "react";
 import WelcomeOverlay from "./_components/welcome-overlay";
-import { Media } from "@/payload-types";
-import ImportantPersonnel from "./_components/important-personnels";
-import { useWelcome, WelcomeProvider } from "./_components/welcome-context";
-import { Button } from "@/components/ui/button";
+import { Media, Stall } from "@/payload-types";
+import StallsDetails from "./_components/stalls";
+
 
 interface IDocs {
   id: string;
@@ -26,6 +25,8 @@ export type TCollegeDetails = {
 interface PageData {
   participants: any[],
   display: any[],
+  activities: any[],
+  stalls: Stall[],
 }
 
 async function getData(): Promise<PageData> {
@@ -38,32 +39,66 @@ async function getData(): Promise<PageData> {
 
 
 const DisplayPage = () => {
-  const [showOverlay, setShowOverlay] = useState(true)
+  const [showOverlay, setShowOverlay] = useState(false)
   const [latestCollege, setLatestCollege] = useState<IDocs | undefined>(undefined);
+  const [stallsData, setStallsData] = useState<Stall[] | undefined>(undefined)
 
-  const [data, setData] = useState<PageData | undefined>(undefined)
+  const [data, setData] = useState<PageData>({
+    participants: [],
+    display: [],
+    activities: [],
+    stalls: {} as Stall[],
+  })
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const newData = await getData()
-        const latestData = newData.participants.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+        const newData = await getData();
+
+        // Fetch the previous value from sessionStorage
+        const length = JSON.parse((sessionStorage.getItem("length") ?? "0"));
+
+        // Sort and get the latest participant
+        const latestData = newData.participants.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )[0];
+
         setLatestCollege(latestData);
-        setData(newData)
+
+        // Compare newData length with the previous one in sessionStorage
+        if (newData.participants.length > length) {
+          sessionStorage.setItem("length", newData.participants.length.toString());
+          setShowOverlay(true);
+        }
+
+        // Set the new stalls data and participants
+        setStallsData(newData.stalls);
+        setData(newData); // Update state
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('Error fetching data:', error);
       }
-    }
+    };
 
     // Initial fetch
-    fetchData()
+    fetchData();
 
     // Set up polling every 5 seconds
-    const intervalId = setInterval(fetchData, 5000)
+    const intervalId = setInterval(fetchData, 5000);
 
     // Clean up interval on component unmount
-    return () => clearInterval(intervalId)
-  }, [])
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (showOverlay) {
+      const timer = setTimeout(() => {
+        setShowOverlay(false); // Reset to false after 5 seconds
+      }, 5000);
+
+      // Cleanup timer on unmount or when showOverlay changes
+      return () => clearTimeout(timer);
+    }
+  }, [showOverlay]);
 
 
   if (!data) {
@@ -73,30 +108,33 @@ const DisplayPage = () => {
   return (
     <>
       <div className="flex-1 h-svh bg-gray-100 flex flex-col gap-2 p-4">
-        <div className="flex-1 bg-gray-100 flex gap-2">
+        <div className="flex-1 flex gap-2">
+
           <div className="flex-1 rounded-xl overflow-clip relative">
             <DisplayCarousel images={data.display} />
-
           </div>
+
           <div className="flex-1">
             <ParticipantCount data={data.participants} />
           </div>
         </div>
+
+
         <div className="flex-1 flex gap-2">
-          <div className="flex-1"><ImportantPersonnel /></div>
-          <div className="flex-1 rounded-xl overflow-clip relative">
-            <DisplayCarousel images={data.display} />
+
+          <div className="flex-1 w-1/2 overflow-clip rounded-xl border-black border">
+            <StallsDetails stallsData={stallsData} />
           </div>
+
+          <div className="flex-1 rounded-xl overflow-clip relative">
+            <DisplayCarousel images={data.activities} />
+          </div>
+
         </div>
       </div>
-      <WelcomeProvider>
-        <WelcomeOverlay showOverlay={showOverlay} college={latestCollege?.collegeName} photoUrl={typeof latestCollege?.photo !== 'string' && latestCollege?.photo?.url
-        } studentCount={latestCollege?.participantNumber} contactPerson={latestCollege?.contactPerson} />
-      </WelcomeProvider>
-
-      <Button variant={"default"} onClick={()=>setShowOverlay(true)}>
-                Trigger welcome
-            </Button>
+      <div className="bg-gray-200 text-center">&copy; A product of Texas Imaginology - TIC</div>
+      <WelcomeOverlay showOverlay={showOverlay} college={latestCollege?.collegeName} photoUrl={typeof latestCollege?.photo !== 'string' && latestCollege?.photo?.url
+      } studentCount={latestCollege?.participantNumber} contactPerson={latestCollege?.contactPerson} />
     </>
 
   )

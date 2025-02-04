@@ -16,19 +16,18 @@ const Participants: CollectionConfig = {
       name: 'participantNumber',
       type: 'number',
       required: true,
-      unique: true,
+      
+    },
+    {
+      name: 'contactPerson',
+      type: 'text',
+      required: true,
     },
     {
       name: 'photo',
       type: 'upload',
       relationTo: 'media',
       required: false,
-    },
-    {
-      name: 'contactPerson',
-      type: 'text',
-      required: true,
-      unique: true,
     },
   ],
 };

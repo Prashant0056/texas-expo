@@ -9,7 +9,7 @@ interface Message {
 
 export function DisplayCarousel({ images }: { images: Message[] }) {
   return (
-    <Carousel autoplay className="relative h-[35vh] w-full">
+    <Carousel autoplay delayLength={10000} className="relative h-[35vh] w-full">
       <CarouselContent>
         {images.map((feature, index) => (
           <CarouselItem key={index}>

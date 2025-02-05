@@ -29,17 +29,17 @@ const WelcomeOverlay = ({ showOverlay, college, studentCount, photoUrl, contactP
                         <Image src={"/assets/texas-logo.png"} alt="texas logo" width={200} height={100} className="fixed top-2" />
 
                         <div>
-                            <h2 className="text-4xl font-bold mb-8">Welcome 🙏</h2>
-                            <h2 className="text-5xl font-bold mb-8 capitalize">{college}</h2>
+                            <h2 className="text-5xl font-bold mb-8">Welcome 🙏</h2>
+                            <h2 className="text-9xl font-bold mb-8 capitalize text-wrap">{college}</h2>
                         </div>
 
                         <div className="flex flex-col flex-1 items-center justify-center gap-4">
                             <div className="flex flex-col gap-3">
-                                <p className="text-2xl">Number of Attending Students</p>
-                                <p className="text-6xl font-bold">{studentCount}</p>
+                                <p className="text-4xl">Number of Attending Students</p>
+                                <p className="text-6xl font-bold text-green-600">{studentCount}</p>
                             </div>
                             <div>
-                                <p className="text-xl font-semibold">Thank You {contactPerson}</p>
+                                <p className="text-3xl font-semibold">Thank You {contactPerson}</p>
                             </div>
                             <div className="flex relative w-1/2 rounded-md h-full justify-center">
                                 {photoUrl && <Image

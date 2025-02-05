@@ -11,16 +11,20 @@ interface IStallsProps {
 const StallsDetails = ({ stallsData }: IStallsProps) => {
 
     const groupedStalls = stallsData?.reduce((acc, stall, index) => {
-        const groupIndex = Math.floor(index / 6)
+        const groupIndex = Math.floor(index / 6);
         if (!acc[groupIndex]) {
-            acc[groupIndex] = []
+            acc[groupIndex] = [];
         }
-        acc[groupIndex].push(stall)
-        return acc
-    }, [] as Stall[][])
+        acc[groupIndex].push(stall);
+
+        // Sort the group by stallNo after pushing the stall
+        acc[groupIndex].sort((a, b) => parseInt(a.stallNo) - parseInt(b.stallNo));
+
+        return acc;
+    }, [] as Stall[][]);
 
     return (
-        <Carousel autoplay className="relative h-[35vh]">
+        <Carousel autoplay delayLength={6000} className="relative h-[35vh]">
             <CarouselContent>
                 {groupedStalls?.map((group, groupIndex) => (
                     <CarouselItem key={groupIndex}>
@@ -41,7 +45,15 @@ const StallsDetails = ({ stallsData }: IStallsProps) => {
                                         <TableCell className="">
                                             <div className="pl-5 flex ">
                                                 {stall.projects.map((project, index) => (
-                                                    <p key={project.id} className="flex-1">{index + 1}.{project.title}</p>
+                                                    <p key={project.id} className="flex-1 flex gap-4 text-xl font-semibold">
+                                                        <p>
+
+                                                            {index + 1}.
+                                                        </p>
+                                                        <p>
+
+                                                            {project.title}</p>
+                                                    </p>
                                                 ))}
                                             </div>
                                         </TableCell>

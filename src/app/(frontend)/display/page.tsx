@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import WelcomeOverlay from "./_components/welcome-overlay";
 import { Media, Stall } from "@/payload-types";
 import StallsDetails from "./_components/stalls";
+import { Button } from "@/components/ui/button";
 
 
 interface IDocs {
@@ -93,7 +94,7 @@ const DisplayPage = () => {
     if (showOverlay) {
       const timer = setTimeout(() => {
         setShowOverlay(false); // Reset to false after 5 seconds
-      }, 5000);
+      }, 60000);
 
       // Cleanup timer on unmount or when showOverlay changes
       return () => clearTimeout(timer);
@@ -132,9 +133,9 @@ const DisplayPage = () => {
 
         </div>
       </div>
-      <div className="bg-gray-200 text-center">&copy; A product of Texas Imaginology - TIC</div>
+      <Button onClick={()=>setShowOverlay(true)} className="bg-gray-200 text-black hover:bg-gray-200 hover:text-black" asChild><div className="bg-gray-200 text-center">&copy; A product of Texas Imaginology - TIC</div></Button>
       <WelcomeOverlay showOverlay={showOverlay} college={latestCollege?.collegeName} photoUrl={typeof latestCollege?.photo !== 'string' && latestCollege?.photo?.url
-      } studentCount={latestCollege?.participantNumber} contactPerson={latestCollege?.contactPerson} />
+        } studentCount={latestCollege?.participantNumber} contactPerson={latestCollege?.contactPerson} />
     </>
 
   )
